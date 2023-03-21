@@ -28,7 +28,7 @@ namespace StateTreeTool
 
     }
 
-    public abstract class State : IState
+    public abstract class StateBase : IState
     {
         public void Enter()
         {
@@ -49,34 +49,6 @@ namespace StateTreeTool
         protected abstract void OnUpdate();
         protected abstract void OnExit();
 
-    }
-
-    public abstract class TreeStateItem : State, ITreeItem
-    {
-        public void AddChild(ITreeItem item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ITreeItem GetChild(int index)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ITreeItem[] GetChildren()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ITreeItem GetParent()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetParent(ITreeItem item)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
 
