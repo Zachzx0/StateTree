@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace StateTreeTool
 {
-
+    internal interface IStateRuntime
+    {
+        void SwitchState(IState next);
+    }
 
     /// <summary>
     /// 通过序列化数据创建对象
     /// 或者手动调用State对象
     /// </summary>
-    public class StateRunTime : ISerialize
+    public class StateRunTime : ISerialize, IStateRuntime
     {
 
         public StateRunTime()

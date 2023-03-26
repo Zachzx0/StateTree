@@ -4,6 +4,23 @@ using UnityEngine;
 
 namespace StateTreeTool
 {
+    public interface ITreeItem
+    {
+        void SetParent(ITreeItem item);
+
+        void AddChild(ITreeItem item);
+
+        ITreeItem GetParent();
+
+        ITreeItem[] GetChildren();
+
+        ITreeItem GetChild(int index);
+
+    }
+
+    /// <summary>
+    /// TreeItem的定位类似Unity中的Transform
+    /// </summary>
     public class TreeItem : ITreeItem
     {
         private ITreeItem[] _children;
