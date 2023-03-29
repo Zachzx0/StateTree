@@ -24,26 +24,33 @@ namespace StateTreeTool
         OnTick,
         OnEvent
     }
-    internal class StateTransition
+    internal class StateTransition: ITransition
     {
-        //TransitionTo
+        public int TransitionTo { get; private set; }
 
-        //Trigger:OnStateComplete, OnStateSucc,OnStateFailed, OnTick, OnEvent
+        private ITransition _transitionImp;
 
-        //Condition
+        public StateTransition(int toState, EStateTransitionType tranisitonType)
+        {
+            TransitionTo = toState;
+            _transitionImp = TransitionFactory.CreateTransition(tranisitonType);
+        }
 
-        //public bool Update()
-        //{
-        //    //如果StateComplete，就调用Transition的StateComplete
-        //    //遍历check
-        //}
-        
+        public bool Init => _transitionImp.Init;
+
+        public bool Check()
+        {
+            return _transitionImp.Init && _transitionImp.Check();
+        }
+
+        public void StateComplete()
+        {
+            _transitionImp.StateComplete();
+        }
     }
 
     internal interface ITransition
     {
-        EStateTransitionType StateTransitionType { get; }
-
         bool Init { get; }
 
         void StateComplete();
@@ -54,13 +61,15 @@ namespace StateTreeTool
     internal abstract class TransitionBase : ITransition
     {
         private EStateTransitionType _stateTransitionType = EStateTransitionType.OnStateComplete;
-        public EStateTransitionType StateTransitionType => _stateTransitionType;
+        public EStateTransitionType StateTransitionType { get { return _stateTransitionType; } }
 
 
         private bool _init = false;
         public bool Init => _init;
 
         protected bool stateComplete = false;
+
+        protected ICondition[] conditions;
 
         public TransitionBase(EStateTransitionType type) { _stateTransitionType = type; }
 
@@ -70,22 +79,65 @@ namespace StateTreeTool
         {
             stateComplete = true;
         }
+
+        protected bool CheckCondition()
+        {
+            bool result = true;
+            int condCount = conditions.Length;
+            for (int i = 0; i < condCount; i++)
+            {
+                if (!conditions[i].Check())
+                {
+                    result = false;
+                    break;
+                }
+            }
+            return result;
+        }
     }
 
-    internal class TransitionWhenStateComplete : ITransition
+    internal class TransitionWhenStateComplete : TransitionBase
     {
-        public EStateTransitionType StateTransitionType => throw new NotImplementedException();
-
-        public bool Init => throw new NotImplementedException();
-
-        public bool Check()
+        public TransitionWhenStateComplete(EStateTransitionType type) : base(type)
         {
-            throw new NotImplementedException();
         }
 
-        public void StateComplete()
+        public override bool Check()
         {
-            throw new NotImplementedException();
+            if (stateComplete)
+            {
+                return CheckCondition();
+            }
+
+            return false;
+        }
+    }
+
+    internal class TransitionTick : TransitionBase
+    {
+        public TransitionTick(EStateTransitionType type) : base(type)
+        {
+        }
+
+        public override bool Check()
+        {
+            return CheckCondition();
+        }
+    }
+
+    internal static class TransitionFactory
+    {
+        public static ITransition CreateTransition(EStateTransitionType type)
+        {
+            switch (type)
+            {
+                case EStateTransitionType.OnTick:
+                    return new TransitionTick(type);
+                case EStateTransitionType.OnStateComplete:
+                    return new TransitionWhenStateComplete(type);
+                default: break;
+            }
+            return null;
         }
     }
 }

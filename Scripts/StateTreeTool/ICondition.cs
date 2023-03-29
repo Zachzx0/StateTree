@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace StateTreeTool
 {
-    internal class ICondition
+    internal interface ICondition
     {
-        public bool Check();
+        bool Check();
     }
 }

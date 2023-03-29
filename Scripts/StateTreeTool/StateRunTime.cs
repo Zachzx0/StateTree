@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace StateTreeTool
 {
-    internal interface IStateRuntime
+    internal class Context
     {
-        void SwitchState(IState next);
+        public StateRunTime StateRuntime { get; set; }
     }
 
     /// <summary>
     /// 通过序列化数据创建对象
     /// 或者手动调用State对象
     /// </summary>
-    public class StateRunTime : ISerialize, IStateRuntime
+    public class StateRunTime : SerializeData
     {
 
         public StateRunTime()
@@ -23,12 +23,21 @@ namespace StateTreeTool
 
         }
 
-        public State Root;
+        internal Context ContextObejct;
+
+        internal State Root;
 
         private IState _current;
         private IState _last;
 
-        public void SwitchState(IState next)
+        internal Dictionary<int , IState> IdToState = new Dictionary<int, IState>();
+
+        public void Start(int specifyId)
+        {
+            SwitchState(IdToState[specifyId]);
+        }
+
+        internal void SwitchState(IState next)
         {
             if (_current != null) _current.Exit();
             _last = _current;
@@ -36,7 +45,7 @@ namespace StateTreeTool
             _current.Enter();
         }
 
-        public void Update(float time)      //float这种数据类型咋办，之后处理吧
+        public void Update(long time)      //浮点数暂时都乘1000变成long
         {
             if (_current != null) _current.Update();
         }
@@ -44,15 +53,28 @@ namespace StateTreeTool
 
 
 
-
-        public void WriteTo(IStream stream)
+        protected override void WriteToImp(IStream stream)
         {
-            throw new NotImplementedException();
+            
         }
 
-        public void ReadFrom(IStream stream)
+        protected override void ReadFromImp(IStream stream)
         {
-            throw new NotImplementedException();
+            //先Read所有实例
+            //----Read Condition
+            //----Read Transition
+            //----ReadTask
+            //----ReadState
+
+
+            //序列化的逻辑
+
+            //对象为空 写0
+            //
+
+
+            ContextObejct = new Context();
+            ContextObejct.StateRuntime = this;
         }
     }
 }

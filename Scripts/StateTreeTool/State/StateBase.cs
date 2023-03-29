@@ -6,11 +6,11 @@ namespace StateTreeTool
 {
     internal abstract class StateBase : IState
     {
-        protected IStateRuntime runtime;
+        protected Context ContextObject;
 
-        public StateBase(IStateRuntime stateRuntime)
+        public StateBase(Context @object)
         {
-            this.runtime = stateRuntime;
+            ContextObject = @object;
         }
 
         public void Enter()
@@ -53,28 +53,63 @@ namespace StateTreeTool
         private StateTransition[] _transitions = null;  //其他状态的过渡
 
 
-        public State(IStateRuntime stateRuntime) : base(stateRuntime)
+        public State(Context context) : base(context)
         {
         }
 
         public TreeItem Tree { get; private set; }
 
+
+        private bool _allTaskCompleteSymbol = false;
+
         protected override void OnEnter()
         {
-            throw new System.NotImplementedException();
+            _allTaskCompleteSymbol = false;
+
+            int taskCount = _tasks.Length;
+            for (int i = 0; i < taskCount; i++)
+            {
+                _tasks[i].Start();
+            }
         }
 
         protected override void OnExit()
         {
-            throw new System.NotImplementedException();
+            int taskCount = _tasks.Length;
+            for (int i = 0; i < taskCount; i++)
+            {
+                _tasks[i].Stop();
+            }
         }
 
         protected override void OnUpdate()
         {
+            bool allTaskComplete = false;
             int taskCount = _tasks.Length;
             for(int i = 0; i < taskCount; i++)
             {
-                _tasks[i].Update();
+                var task = _tasks[i];
+                if (task != null && task.Running && !task.Complete)
+                {
+                    task.Update();
+                    allTaskComplete = allTaskComplete && task.Complete; 
+                }
+            }
+
+            bool needTriggerAllTaskComplete = !_allTaskCompleteSymbol && allTaskComplete;
+            int transitionCount = _transitions.Length;
+            for(int i = 0; i < transitionCount; i++)
+            {
+                var transition = _transitions[i];
+                if (needTriggerAllTaskComplete)
+                {
+                    transition.StateComplete();
+
+                    if (transition.Check())
+                    {
+                        ContextObject.StateRuntime.SwitchState(transition.)
+                    }
+                }
             }
         }
     }

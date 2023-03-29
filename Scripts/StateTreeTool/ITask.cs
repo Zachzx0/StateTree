@@ -21,6 +21,8 @@ namespace StateTreeTool
     internal interface ITask
     {
         bool Running { get; }
+
+        bool Complete { get; }
         void Start();
 
         void Update();

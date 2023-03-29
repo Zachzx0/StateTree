@@ -6,23 +6,33 @@ using UnityEngine;
 /// 组件与外部序列化方法的接口
 /// 
 /// </summary>
-public interface IStateTreeSerialize
-{
-    void Deserialize();
-
-    void Serialize();
-}
-
 public interface IStream
 {
-    void Serialize();
+    void WriteByte();
 
-    void Deserialize();
-}
+    void WriteShort();
 
-public interface ISerialize
-{
-    void WriteTo(IStream stream);
+    void WriteInt();
 
-    void ReadFrom(IStream stream);
+    void WriteLong();
+
+    void WriteFloat();
+
+    void WriteDouble();
+
+    void WriteString();
+
+    byte ReadBytes();
+
+    short ReadShort();
+
+    int ReadInt();
+
+    long ReadLong();
+
+    float ReadFloat();
+
+    double ReadDouble();
+
+    string ReadString();
 }
