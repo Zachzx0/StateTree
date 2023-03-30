@@ -60,6 +60,15 @@ namespace StateTreeTool
 
         protected override void ReadFromImp(IStream stream)
         {
+            //需要设计出参数封装，封装基本的参数
+            // ParamString
+            // ParamFloat(long 存储)
+            // ParamLong
+            // ParamInt
+            // ParamByte
+            // ParamLong
+
+
             //先Read所有实例
             //----Read Condition
             //----Read Transition

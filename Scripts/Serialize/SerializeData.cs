@@ -31,5 +31,11 @@ namespace StateTreeTool
 
     }
 
+    /// <summary>
+    /// 这个方法用于标识方法
+    /// </summary>
     internal class SerializeHelper
+    {
+
+    }
 }
